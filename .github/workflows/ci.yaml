@@ -1,0 +1,72 @@
+name: Validate on Pull Request
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+-.+" # Valid example: v1.1.1-alpha.1, v1.1.1-beta.1, v1.1.1-drew
+  pull_request:
+    types: [ opened, reopened, synchronize ]
+    paths:
+      - "charts/**"
+
+jobs:
+  lint-chart:
+    name: Lint Chart
+    permissions:
+      contents: read
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@fe7b79cd5ee1e45176fcad797de68ecaf3ca4814
+
+      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b
+
+      - name: Install chart-testing
+        uses: helm/chart-testing-action@0d28d3144d3a25ea2cc349d6e59901c4ff469b3b
+
+      - name: Run lint
+        run: ct lint --all --validate-maintainers=false --config .github/ct.yaml
+
+  lint-docs:
+    name: Lint Helm Docs
+    permissions:
+      contents: read
+    runs-on: ubuntu-24.04
+    needs: lint-chart
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Run helm-docs
+        run: .github/helm-docs.sh
+
+  kubeconform-chart:
+    name: Check Charts can Deploy
+    permissions:
+      contents: read
+    runs-on: ubuntu-24.04
+    needs:
+      - lint-chart
+    strategy:
+      matrix:
+        k8s:
+          # from https://github.com/yannh/kubernetes-json-schema
+          - v1.29.9
+          - v1.30.5
+          - v1.31.1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 0
+
+      - name: Run kubeconform
+        env:
+          KUBERNETES_VERSION: ${{ matrix.k8s }}
+        run: .github/kubeconform.sh
+

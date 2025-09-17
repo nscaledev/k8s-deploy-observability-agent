@@ -1,0 +1,18 @@
+---
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0  # Use the ref you want to point at
+    hooks:
+      - id: trailing-whitespace
+  - repo: https://github.com/norwoodj/helm-docs.git
+    rev: v1.14.2
+    hooks:
+      - id: helm-docs
+        args:
+          - --chart-search-root=charts
+  - repo: local
+    hooks:
+      - id: chart-lint
+        name: Run Chart Lint Test
+        language: system
+        entry: 'ct lint --all --validate-maintainers=false --config .github/ct.yaml'

@@ -1,0 +1,21 @@
+name: Update the Changelog
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  changelog:
+    name: Generate changelog
+    if: (github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'main')
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Generate a token
+        id: generate-token
+        uses: nscaledev/actions/docs/changelog@a807a80b31ecb33812fcecd89592649662295173
+        with:
+          app-id: ${{ vars.NSCALE_ACTIONS_APP_ID }}
+          app-private-key: ${{ secrets.NSCALE_ACTIONS_APP_PK }}
