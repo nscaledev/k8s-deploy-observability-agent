@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-cleanup
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    spec:
+      serviceAccountName: opentelemetry-operator
+      restartPolicy: Never
+      containers:
+        - name: cleanup
+          image: bitnami/kubectl:1.31.0
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -euo pipefail
+              kubectl delete opentelemetrycollector agent \
+                --namespace {{ .Values.namespace }} \
+                --ignore-not-found \
+                --wait=true
+              kubectl delete targetallocator metrics \
+                --namespace {{ .Values.namespace }} \
+                --ignore-not-found \
+                --wait=true

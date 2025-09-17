@@ -1,0 +1,49 @@
+---
+
+# The namespace to deploy observability agent components
+namespace: telemetry-system
+# Whether Helm should create the namespace automatically
+createNamespace: false
+
+# The clusters name
+clusterName: ~
+
+# The region the cluster is in
+region: ~
+
+# The environment the cluster is in
+environment: ~
+
+# OpenTelemetry collector aggregator endpoint
+# Users must provide this value
+otlpEndpoint: ~
+
+# OpenTelemetry component versions
+# When bumping versions, also bump and rerun ./scripts/update-crds.sh to refresh vendored CRDs
+openTelemetry:
+  version: 0.92.5
+  collector:
+    version: 0.131.1
+
+# Aggregator authentication configuration
+aggregator:
+  auth:
+    # Name of the secret containing basic auth credentials
+    # Must contain 'username' and 'password' keys
+    secretName: aggregator-basic-auth-credentials
+
+
+# OpenTelemetry Operator subchart configuration
+opentelemetry-operator:
+  enabled: true
+  crds:
+    create: false
+  fullnameOverride: opentelemetry-operator
+  namespaceOverride: telemetry-system
+  manager:
+    serviceMonitor:
+      enabled: true
+  admissionWebhooks:
+    failurePolicy: Ignore
+    certManager:
+      enabled: true

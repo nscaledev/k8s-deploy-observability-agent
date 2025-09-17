@@ -13,7 +13,7 @@ tar -xf /tmp/kubeconform.tar.gz kubeconform
 
 # validate apps
 for CHART_DIR in ${CHART_DIRS}; do
-  for TEST in example; do
+  for TEST in observability-agent; do
     helm template --values charts/"${CHART_DIR}"/ci/test-${TEST}.yaml charts/"${CHART_DIR}" | ./kubeconform --strict --ignore-missing-schemas --kubernetes-version "${KUBERNETES_VERSION#v}"
   done
 done
