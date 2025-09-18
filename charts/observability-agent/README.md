@@ -15,10 +15,11 @@ OTEL observability agent for managed Nscale Kubernetes clusters
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | aggregator.auth.secretName | string | `"aggregator-basic-auth-credentials"` |  |
+| cleanupJob.enabled | bool | `true` |  |
+| cleanupJob.image | string | `"registry.k8s.io/kubectl:v1.31.0"` |  |
+| cleanupJob.serviceAccountName | string | `nil` |  |
 | clusterName | string | `nil` |  |
-| createNamespace | bool | `false` |  |
 | environment | string | `nil` |  |
-| namespace | string | `"telemetry-system"` |  |
 | openTelemetry.collector.version | string | `"0.131.1"` |  |
 | openTelemetry.version | string | `"0.92.5"` |  |
 | opentelemetry-operator.admissionWebhooks.certManager.enabled | bool | `true` |  |
@@ -27,8 +28,7 @@ OTEL observability agent for managed Nscale Kubernetes clusters
 | opentelemetry-operator.enabled | bool | `true` |  |
 | opentelemetry-operator.fullnameOverride | string | `"opentelemetry-operator"` |  |
 | opentelemetry-operator.manager.serviceMonitor.enabled | bool | `true` |  |
-| opentelemetry-operator.namespaceOverride | string | `"telemetry-system"` |  |
-| otlpEndpoint | string | `nil` |  |
+| otlpEndpoint | string | `"aggregator-public.observability-dev.glo1.nscale.com"` |  |
 | region | string | `nil` |  |
 
 ----------------------------------------------

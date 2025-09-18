@@ -1,10 +1,5 @@
 ---
 
-# The namespace to deploy observability agent components
-namespace: telemetry-system
-# Whether Helm should create the namespace automatically
-createNamespace: false
-
 # The clusters name
 clusterName: ~
 
@@ -15,8 +10,12 @@ region: ~
 environment: ~
 
 # OpenTelemetry collector aggregator endpoint
-# Users must provide this value
-otlpEndpoint: ~
+otlpEndpoint: aggregator-public.observability-dev.glo1.nscale.com
+
+cleanupJob:
+  enabled: true
+  image: registry.k8s.io/kubectl:v1.31.0
+  serviceAccountName: null
 
 # OpenTelemetry component versions
 # When bumping versions, also bump and rerun ./scripts/update-crds.sh to refresh vendored CRDs
@@ -39,7 +38,6 @@ opentelemetry-operator:
   crds:
     create: false
   fullnameOverride: opentelemetry-operator
-  namespaceOverride: telemetry-system
   manager:
     serviceMonitor:
       enabled: true

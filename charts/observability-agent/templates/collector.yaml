@@ -4,7 +4,7 @@ apiVersion: opentelemetry.io/v1beta1
 kind: OpenTelemetryCollector
 metadata:
   name: agent
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     {{- include "observability-agent.labels" . | nindent 4 }}
 spec:
@@ -64,7 +64,7 @@ spec:
             static_configs:
             - targets: [ '0.0.0.0:8888' ]
         target_allocator:
-          endpoint: http://metrics-targetallocator.{{ .Values.namespace }}
+          endpoint: http://metrics-targetallocator.{{ .Release.Namespace }}
           interval: 30s
           collector_id: ${env:K8S_POD_NAME}
     processors:

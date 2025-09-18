@@ -1,3 +1,4 @@
+{{- if .Values.cleanupJob.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -9,21 +10,20 @@ metadata:
 spec:
   template:
     spec:
-      serviceAccountName: opentelemetry-operator
+      serviceAccountName: {{ default (include "observability-agent.cleanupServiceAccount" .) .Values.cleanupJob.serviceAccountName }}
       restartPolicy: Never
       containers:
         - name: cleanup
-          image: bitnami/kubectl:1.31.0
+          image: {{ .Values.cleanupJob.image }}
           command:
-            - /bin/sh
-            - -c
-            - |
-              set -euo pipefail
-              kubectl delete opentelemetrycollector agent \
-                --namespace {{ .Values.namespace }} \
-                --ignore-not-found \
-                --wait=true
-              kubectl delete targetallocator metrics \
-                --namespace {{ .Values.namespace }} \
-                --ignore-not-found \
-                --wait=true
+            - kubectl
+          args:
+            - delete
+            - opentelemetrycollector/agent
+            - targetallocator/metrics
+            - --namespace
+            - {{ .Release.Namespace }}
+            - --ignore-not-found
+            - --wait=true
+
+{{- end }}

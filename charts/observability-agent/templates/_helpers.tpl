@@ -24,3 +24,8 @@ Selector labels
 app.kubernetes.io/name: {{ .Chart.Name }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
+
+{{/* Service account name for cleanup job */}}
+{{- define "observability-agent.cleanupServiceAccount" -}}
+{{ printf "%s-cleanup" .Release.Name }}
+{{- end }}

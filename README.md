@@ -17,3 +17,4 @@ Vendored CRD versions should always match the operator version they are vendored
 ```bash
 ./scripts/update-crds.sh
 ```
+
