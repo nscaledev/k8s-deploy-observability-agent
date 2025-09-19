@@ -1,0 +1,18 @@
+---
+
+apiVersion: opentelemetry.io/v1alpha1
+kind: TargetAllocator
+metadata:
+  name: metrics
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "observability-agent.labels" . | nindent 4 }}
+    app.kubernetes.io/component: target-allocator
+spec:
+  allocationStrategy: per-node
+  prometheusCR:
+    enabled: true
+    podMonitorSelector: {}
+    serviceMonitorSelector: {}
+    scrapeConfigSelector: {}
+# scrapeConfigs:

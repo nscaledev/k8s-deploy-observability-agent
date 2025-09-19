@@ -1,0 +1,29 @@
+---
+clusterName: observability-agent-test
+region: test
+environment: test
+namespace: telemetry-system
+
+# OpenTelemetry collector aggregator endpoint
+otlpEndpoint: aggregator-public.observability-dev.glo1.nscale.com
+
+# Aggregator authentication configuration
+aggregator:
+  auth:
+    secretName: aggregator-basic-auth-credentials
+
+# OpenTelemetry component versions
+openTelemetry:
+  version: 0.92.5
+  collector:
+    version: v0.131.1
+
+# OpenTelemetry Operator subchart configuration
+opentelemetry-operator:
+  enabled: true
+  manager:
+    serviceMonitor:
+      enabled: true
+  admissionWebhooks:
+    certManager:
+      enabled: true

@@ -1,6 +1,0 @@
-apiVersion: v2
-name: k8s-deploy-template
-description: A template for application that will be deployed to Nscale clusters
-type: application
-version: 0.0.0
-appVersion: "v0.0.0"

@@ -1,0 +1,154 @@
+---
+
+apiVersion: opentelemetry.io/v1beta1
+kind: OpenTelemetryCollector
+metadata:
+  name: agent
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "observability-agent.labels" . | nindent 4 }}
+spec:
+  mode: daemonset
+  tolerations:
+    - operator: Exists
+  ports: []
+  # used in config to determine node logs are from
+  env:
+    - name: K8S_NODE_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: spec.nodeName
+    - name: K8S_POD_NAME
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.name
+    - name: AGGREGATOR_USERNAME
+      valueFrom:
+        secretKeyRef:
+          key: username
+          name: {{ .Values.aggregator.auth.secretName }}
+    - name: AGGREGATOR_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: password
+          name: {{ .Values.aggregator.auth.secretName }}
+  config:
+    extensions:
+      basicauth/aggregator:
+        client_auth:
+          username: ${env:AGGREGATOR_USERNAME}
+          password: ${env:AGGREGATOR_PASSWORD}
+    receivers:
+      otlp:
+        protocols:
+          http:
+          grpc:
+      filelog:
+        include:
+          - /var/log/pods/*/*/*.log
+        include_file_name: false
+        include_file_path: true
+        retry_on_failure:
+          enabled: true
+        operators:
+        - id: container-parser
+          type: container
+          # max_log_size: 102400
+      journald:
+        directory: /var/log/journal
+      prometheus:
+        config:
+          scrape_configs:
+          - job_name: 'otel-collector'
+            scrape_interval: 10s
+            static_configs:
+            - targets: [ '0.0.0.0:8888' ]
+        target_allocator:
+          endpoint: http://metrics-targetallocator.{{ .Release.Namespace }}
+          interval: 30s
+          collector_id: ${env:K8S_POD_NAME}
+    processors:
+      k8sattributes:
+        extract:
+          labels:
+          - from: pod
+            key_regex: (.*)
+            tag_name: $$1
+          metadata:
+          - k8s.namespace.name
+          - k8s.deployment.name
+          - k8s.statefulset.name
+          - k8s.daemonset.name
+          - k8s.cronjob.name
+          - k8s.job.name
+          - k8s.node.name
+          - k8s.pod.name
+          - k8s.pod.uid
+          - k8s.pod.start_time
+        filter:
+          node_from_env_var: K8S_NODE_NAME
+        passthrough: false
+        pod_association:
+        - sources:
+          - from: resource_attribute
+            name: k8s.pod.ip
+        - sources:
+          - from: resource_attribute
+            name: k8s.pod.uid
+        - sources:
+          - from: connection
+      resource:
+        attributes:
+          - key: cluster
+            value: "{{ .Values.clusterName }}-{{ .Values.region }}"
+            action: upsert
+          - key: environment
+            value: "{{ .Values.environment }}"
+            action: upsert
+          - key: region
+            value: "{{ .Values.region }}"
+            action: insert
+      batch:
+        send_batch_size: 1024
+        timeout: 10s
+    exporters:
+      otlphttp:
+        endpoint: "https://{{ .Values.otlpEndpoint }}"
+        auth:
+          authenticator: basicauth/aggregator
+      debug: {}
+    service:
+      extensions: [basicauth/aggregator]
+      pipelines:
+        logs:
+          receivers: [filelog, otlp]
+          processors: [k8sattributes, resource, batch]
+          exporters: [otlphttp]
+        metrics:
+          receivers: [prometheus, otlp]
+          processors: [resource, batch]
+          exporters: [otlphttp]
+        traces:
+          receivers: [otlp]
+          processors: [resource, batch]
+          exporters: [otlphttp]
+      telemetry:
+        logs:
+          level: DEBUG
+          development: true
+  volumeMounts:
+    - name: pods
+      mountPath: /var/log/pods
+      readOnly: true
+    - name: systemd-journal
+      mountPath: /var/log/journal
+      readOnly: true
+  volumes:
+    - name: pods
+      hostPath:
+        path: /var/log/pods
+    - name: systemd-journal
+      hostPath:
+        path: /var/log/journal
+  # Needed because we are using contrib plugins
+  image: ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib:{{ .Values.openTelemetry.collector.version }}

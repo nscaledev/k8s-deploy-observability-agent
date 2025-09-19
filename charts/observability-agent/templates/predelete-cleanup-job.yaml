@@ -1,0 +1,29 @@
+{{- if .Values.cleanupJob.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-cleanup
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    spec:
+      serviceAccountName: {{ default (include "observability-agent.cleanupServiceAccount" .) .Values.cleanupJob.serviceAccountName }}
+      restartPolicy: Never
+      containers:
+        - name: cleanup
+          image: {{ .Values.cleanupJob.image }}
+          command:
+            - kubectl
+          args:
+            - delete
+            - opentelemetrycollector/agent
+            - targetallocator/metrics
+            - --namespace
+            - {{ .Release.Namespace }}
+            - --ignore-not-found
+            - --wait=true
+
+{{- end }}

@@ -1,0 +1,10 @@
+apiVersion: v2
+name: observability-agent
+description: OTEL observability agent for managed Nscale Kubernetes clusters
+type: application
+version: 0.1.0
+appVersion: "v0.1.0"
+dependencies:
+  - name: opentelemetry-operator
+    version: "0.92.5"
+    repository: https://open-telemetry.github.io/opentelemetry-helm-charts
