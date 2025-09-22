@@ -32,6 +32,53 @@ aggregator:
     secretName: aggregator-basic-auth-credentials
 
 
+# Kubernetes component exporters configuration
+exporters:
+  enabled: true
+
+# kube-prometheus-stack subchart configuration
+# Disable all Prometheus components, keep only ServiceMonitors and Services
+kube-prometheus-stack:
+  # Disable Prometheus server
+  prometheus:
+    enabled: false
+
+  # Disable Alertmanager
+  alertmanager:
+    enabled: false
+
+  # Disable Grafana
+  grafana:
+    enabled: false
+
+  # Disable Prometheus Operator (we have OpenTelemetry Operator)
+  prometheusOperator:
+    enabled: false
+
+  # Keep kube-state-metrics with ServiceMonitor
+  kubeStateMetrics:
+    enabled: true
+
+  # Keep node-exporter with ServiceMonitor
+  nodeExporter:
+    enabled: true
+
+  # Keep all control plane ServiceMonitors
+  kubeApiServer:
+    enabled: true
+  kubeControllerManager:
+    enabled: true
+  kubeScheduler:
+    enabled: true
+  kubeEtcd:
+    enabled: true
+  kubeProxy:
+    enabled: true
+  kubelet:
+    enabled: true
+  coreDns:
+    enabled: true
+
 # OpenTelemetry Operator subchart configuration
 opentelemetry-operator:
   enabled: true

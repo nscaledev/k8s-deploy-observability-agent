@@ -1,3 +1,6 @@
 .idea
 old_charts
 .DS_Store
+
+# Helm chart dependencies
+charts/*/charts/
