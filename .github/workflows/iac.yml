@@ -10,6 +10,7 @@ on:
     types: [ opened, reopened, synchronize ]
     paths:
       - "charts/**"
+  workflow_dispatch:
 
 jobs:
   scan-k8s-helm:
@@ -20,17 +21,48 @@ jobs:
       security-events: write
       actions: read
     steps:
-      - uses: nscaledev/actions/iac/k8s-helm-manifest-scan@dd2e8c5514b7250ab3fe86cb08fae7ce7366c540
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Generate Trivy Config file
+        shell: bash
+        run: |
+          cat <<EOF > trivy.yaml
+          misconfiguration:
+            scanners:
+              - kubernetes
+              - helm
+          EOF
+
+      - name: Run Trivy in GitHub SBOM mode and submit results to Dependency Graph
+        uses: aquasecurity/trivy-action@dc5a429b52fcf669ce959baa2c2dd26090d2a6c4
         with:
-          harbor-robot-username: ${{ secrets.HARBOR_GHCR_ROBOT_USERNAME }}
-          harbor-robot-secret: ${{ secrets.HARBOR_GHCR_ROBOT_SECRET }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          trivyignore-from-s3: true
-          trivyignore-file: .trivyignore
-          s3-endpoint: ${{ secrets.S3_ENDPOINT }}
-          s3-access-key: ${{ secrets.S3_ACCESS_KEY }}
-          s3-secret-key: ${{ secrets.S3_SECRET_KEY }}
-          s3-region: glo1
-          s3-bucket: trivyignores
-          s3-path: argocd-apps-k8s
-          scan-fail-on-detection: 0
+          scan-type: 'fs'
+          format: 'github'
+          output: 'dependency-results.sbom.json'
+          image-ref: '.'
+          github-pat: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          TRIVY_SKIP_JAVA_DB_UPDATE: true
+
+      - name: Run Trivy vulnerability scanner in IaC mode
+        uses: aquasecurity/trivy-action@dc5a429b52fcf669ce959baa2c2dd26090d2a6c4
+        id: scan
+        with:
+          scan-type: 'config'
+          hide-progress: true
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'HIGH,CRITICAL'
+          trivy-config: 'trivy.yaml'
+          exit-code: 1
+        env:
+          TRIVY_SKIP_DB_UPDATE: true
+          TRIVY_SKIP_JAVA_DB_UPDATE: true
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@b6a472f63d85b9c78a3ac5e89422239fc15e9b3c
+        if: (success() || failure()) && (steps.scan.conclusion == 'success' || steps.scan.outcome == 'failure')
+        with:
+          sarif_file: 'trivy-results.sarif'
+          token: ${{ secrets.GITHUB_TOKEN }}
