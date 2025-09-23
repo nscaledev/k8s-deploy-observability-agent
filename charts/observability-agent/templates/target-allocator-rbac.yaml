@@ -61,5 +61,5 @@ roleRef:
   name: opentelemetry-target-allocator
 subjects:
   - kind: ServiceAccount
-    name: metrics-targetallocator
+    name: {{ .Release.Name }}-targetallocator
     namespace: {{ .Release.Namespace }}

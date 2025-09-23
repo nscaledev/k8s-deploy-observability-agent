@@ -3,7 +3,7 @@
 apiVersion: opentelemetry.io/v1alpha1
 kind: TargetAllocator
 metadata:
-  name: metrics
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "observability-agent.labels" . | nindent 4 }}
