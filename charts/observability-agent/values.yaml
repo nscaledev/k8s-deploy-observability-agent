@@ -31,11 +31,6 @@ aggregator:
     # Must contain 'username' and 'password' keys
     secretName: aggregator-basic-auth-credentials
 
-
-# Kubernetes component exporters configuration
-exporters:
-  enabled: true
-
 # kube-prometheus-stack subchart configuration
 # Disable all Prometheus components, keep only ServiceMonitors and Services
 kube-prometheus-stack:

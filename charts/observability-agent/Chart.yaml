@@ -11,4 +11,3 @@ dependencies:
   - name: kube-prometheus-stack
     version: "77.10.0"
     repository: https://prometheus-community.github.io/helm-charts
-    condition: exporters.enabled

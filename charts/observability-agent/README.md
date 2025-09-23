@@ -21,7 +21,6 @@ OTEL observability agent for managed Nscale Kubernetes clusters
 | cleanupJob.serviceAccountName | string | `nil` |  |
 | clusterName | string | `nil` |  |
 | environment | string | `nil` |  |
-| exporters.enabled | bool | `true` |  |
 | kube-prometheus-stack.alertmanager.enabled | bool | `false` |  |
 | kube-prometheus-stack.coreDns.enabled | bool | `true` |  |
 | kube-prometheus-stack.grafana.enabled | bool | `false` |  |
