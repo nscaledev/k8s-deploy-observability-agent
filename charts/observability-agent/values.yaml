@@ -51,9 +51,10 @@ kube-prometheus-stack:
   grafana:
     enabled: false
 
-  # Disable Prometheus Operator (we have OpenTelemetry Operator)
+  # Keep Prometheus Operator enabled for ServiceMonitors/exporters
+  # but disable the Prometheus instance itself
   prometheusOperator:
-    enabled: false
+    enabled: true
 
   # Keep kube-state-metrics with ServiceMonitor
   kubeStateMetrics:

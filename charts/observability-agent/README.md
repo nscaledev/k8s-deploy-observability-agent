@@ -34,7 +34,7 @@ OTEL observability agent for managed Nscale Kubernetes clusters
 | kube-prometheus-stack.kubelet.enabled | bool | `true` |  |
 | kube-prometheus-stack.nodeExporter.enabled | bool | `true` |  |
 | kube-prometheus-stack.prometheus.enabled | bool | `false` |  |
-| kube-prometheus-stack.prometheusOperator.enabled | bool | `false` |  |
+| kube-prometheus-stack.prometheusOperator.enabled | bool | `true` |  |
 | openTelemetry.collector.version | string | `"0.131.1"` |  |
 | openTelemetry.version | string | `"0.92.5"` |  |
 | opentelemetry-operator.admissionWebhooks.certManager.enabled | bool | `true` |  |
