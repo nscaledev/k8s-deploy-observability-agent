@@ -1,14 +1,8 @@
 # Vendored CRDs
 
-This directory contains custom resource definitions that must exist before the chart creates resources depending on them. Vendoring the CRDs here ensures Helm installs them first and avoids "no matches for kind" validation errors when using the OpenTelemetry Operator subchart.
+This directory contains OpenTelemetry custom resource definitions that must exist before the chart creates resources depending on them. Vendoring the CRDs here ensures Helm installs them first and avoids "no matches for kind" validation errors when using the OpenTelemetry Operator subchart.
 
 ## Included CRDs
-
-### Prometheus Operator (v0.85.0)
-- `servicemonitors.yaml` – Service-based metric scraping
-- `podmonitors.yaml` – Pod-based metric scraping
-- `scrapeconfigs.yaml` – Custom scrape configurations used by engineering
-- `probes.yaml` – Prometheus blackbox probe configuration support
 
 ### OpenTelemetry Operator (0.92.5)
 - `opentelemetrycollector.yaml` – Defines the `OpenTelemetryCollector` resource
@@ -17,21 +11,22 @@ This directory contains custom resource definitions that must exist before the c
 
 ## Updating CRDs
 
-Run the helper script from the repository root to refresh the vendored CRDs. By default it uses the versions recorded above and updates both Prometheus and OpenTelemetry CRDs.
+Run the helper script from the repository root to refresh the vendored OpenTelemetry CRDs:
 
 ```bash
 ./scripts/update-crds.sh
 ```
 
-You can override versions or skip one of the providers when needed:
+You can override the version or configuration when needed:
 
 ```bash
-./scripts/update-crds.sh --prom-version v0.85.0 --otel-version 0.92.5
-./scripts/update-crds.sh --skip-prom
+./scripts/update-crds.sh --otel-version 0.92.5
 ./scripts/update-crds.sh --otel-namespace telemetry-system --otel-name opentelemetry-operator
 ```
 
-The OpenTelemetry CRDs are rendered with a fixed namespace and name override. Keep the script arguments in sync with `values.yaml` (`opentelemetry-operator.namespaceOverride` and `fullnameOverride`) if you change them.
+The OpenTelemetry CRDs are rendered with a fixed namespace and name override. Keep the script arguments in sync with `values.yaml` (`opentelemetry-operator.fullnameOverride`) if you change them.
+
+**Note**: Monitoring CRDs (ServiceMonitors, PodMonitors, etc.) are now managed by the kube-prometheus-stack subchart and no longer need to be vendored.
 
 After updating:
 1. Verify the chart installs successfully (`helm lint charts/observability-agent` and a test install).

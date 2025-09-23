@@ -23,6 +23,7 @@ OTEL observability agent for managed Nscale Kubernetes clusters
 | environment | string | `nil` |  |
 | kube-prometheus-stack.alertmanager.enabled | bool | `false` |  |
 | kube-prometheus-stack.coreDns.enabled | bool | `true` |  |
+| kube-prometheus-stack.crds.enabled | bool | `true` |  |
 | kube-prometheus-stack.grafana.enabled | bool | `false` |  |
 | kube-prometheus-stack.kubeApiServer.enabled | bool | `true` |  |
 | kube-prometheus-stack.kubeControllerManager.enabled | bool | `true` |  |

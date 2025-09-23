@@ -34,6 +34,9 @@ aggregator:
 # kube-prometheus-stack subchart configuration
 # Disable all Prometheus components, keep only ServiceMonitors and Services
 kube-prometheus-stack:
+  # Ensure CRDs are created by this chart
+  crds:
+    enabled: true
   # Disable Prometheus server
   prometheus:
     enabled: false
