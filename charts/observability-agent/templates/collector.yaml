@@ -41,8 +41,8 @@ spec:
     receivers:
       otlp:
         protocols:
-          http:
-          grpc:
+          http: {}
+          grpc: {}
       filelog:
         include:
           - /var/log/pods/*/*/*.log
