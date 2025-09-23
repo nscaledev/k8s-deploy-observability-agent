@@ -8,6 +8,7 @@ metadata:
   labels:
     {{- include "observability-agent.labels" . | nindent 4 }}
 spec:
+  upgradeStrategy: none
   mode: daemonset
   tolerations:
     - operator: Exists
