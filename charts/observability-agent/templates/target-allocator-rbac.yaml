@@ -19,6 +19,7 @@ rules:
 - apiGroups: [""]
   resources:
   - configmaps
+  - secrets
   verbs: ["get"]
 - apiGroups:
   - discovery.k8s.io
