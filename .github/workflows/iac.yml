@@ -14,8 +14,7 @@ on:
 jobs:
   scan-k8s-helm:
     name: Scan K8S Code
-    runs-on:
-      group: nscale-k8s
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
       security-events: write
