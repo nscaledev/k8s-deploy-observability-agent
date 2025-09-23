@@ -85,7 +85,6 @@ opentelemetry-operator:
   enabled: true
   crds:
     create: false
-  fullnameOverride: opentelemetry-operator
   manager:
     serviceMonitor:
       enabled: true

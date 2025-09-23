@@ -41,7 +41,6 @@ OTEL observability agent for managed Nscale Kubernetes clusters
 | opentelemetry-operator.admissionWebhooks.failurePolicy | string | `"Ignore"` |  |
 | opentelemetry-operator.crds.create | bool | `false` |  |
 | opentelemetry-operator.enabled | bool | `true` |  |
-| opentelemetry-operator.fullnameOverride | string | `"opentelemetry-operator"` |  |
 | opentelemetry-operator.manager.serviceMonitor.enabled | bool | `true` |  |
 | otlpEndpoint | string | `"aggregator-public.observability-dev.glo1.nscale.com"` |  |
 | region | string | `nil` |  |
