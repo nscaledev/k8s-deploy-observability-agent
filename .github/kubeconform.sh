@@ -13,6 +13,12 @@ tar -xf /tmp/kubeconform.tar.gz kubeconform
 
 # validate apps
 for CHART_DIR in ${CHART_DIRS}; do
+  # Add helm repos and build dependencies
+  helm repo add opentelemetry https://open-telemetry.github.io/opentelemetry-helm-charts
+  helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+  helm repo update
+  helm dependency build charts/"${CHART_DIR}"
+
   for TEST in observability-agent; do
     helm template --values charts/"${CHART_DIR}"/ci/test-${TEST}.yaml charts/"${CHART_DIR}" | ./kubeconform --strict --ignore-missing-schemas --kubernetes-version "${KUBERNETES_VERSION#v}"
   done

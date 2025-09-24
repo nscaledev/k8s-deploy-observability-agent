@@ -3,11 +3,12 @@
 apiVersion: opentelemetry.io/v1beta1
 kind: OpenTelemetryCollector
 metadata:
-  name: agent
+  name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "observability-agent.labels" . | nindent 4 }}
 spec:
+  upgradeStrategy: none
   mode: daemonset
   tolerations:
     - operator: Exists
@@ -41,8 +42,8 @@ spec:
     receivers:
       otlp:
         protocols:
-          http:
-          grpc:
+          http: {}
+          grpc: {}
       filelog:
         include:
           - /var/log/pods/*/*/*.log
@@ -64,7 +65,7 @@ spec:
             static_configs:
             - targets: [ '0.0.0.0:8888' ]
         target_allocator:
-          endpoint: http://metrics-targetallocator.{{ .Release.Namespace }}
+          endpoint: http://{{ .Release.Name }}-targetallocator.{{ .Release.Namespace }}
           interval: 30s
           collector_id: ${env:K8S_POD_NAME}
     processors:

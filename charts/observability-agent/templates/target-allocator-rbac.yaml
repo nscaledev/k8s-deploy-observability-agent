@@ -19,6 +19,7 @@ rules:
 - apiGroups: [""]
   resources:
   - configmaps
+  - secrets
   verbs: ["get"]
 - apiGroups:
   - discovery.k8s.io
@@ -60,5 +61,5 @@ roleRef:
   name: opentelemetry-target-allocator
 subjects:
   - kind: ServiceAccount
-    name: metrics-targetallocator
+    name: {{ .Release.Name }}-targetallocator
     namespace: {{ .Release.Namespace }}
